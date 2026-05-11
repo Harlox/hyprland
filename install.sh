@@ -29,7 +29,7 @@ $SUDO pacman -S --needed --noconfirm \
   networkmanager upower brightnessctl \
   kitty fuzzel nautilus \
   noto-fonts noto-fonts-emoji ttf-nerd-fonts-symbols \
-  git cmake ninja python rustup nodejs npm go
+  git curl cmake ninja python rustup nodejs npm go
 
 echo "==> Installation des extras"
 $SUDO pacman -S --needed --noconfirm \
@@ -52,6 +52,7 @@ systemctl --user enable --now pipewire pipewire-pulse wireplumber || {
 HYPR_CONF="${HOME}/.config/hypr/hyprland.conf"
 QUICKSHELL_DIR="${HOME}/.config/quickshell"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+QUICKSHELL_RAW_URL="https://raw.githubusercontent.com/Harlox/hyprland/main/quickshell"
 
 echo "==> Installation de la configuration Quickshell"
 mkdir -p "$QUICKSHELL_DIR"
@@ -60,7 +61,13 @@ if [[ -d "${SCRIPT_DIR}/quickshell" ]]; then
 elif [[ -f "${SCRIPT_DIR}/shell.qml" ]]; then
   cp "${SCRIPT_DIR}/shell.qml" "${QUICKSHELL_DIR}/shell.qml"
 else
-  echo "Avertissement: configuration Quickshell introuvable a cote de install.sh, copie ignoree."
+  echo "Configuration Quickshell locale introuvable, telechargement depuis GitHub."
+  mkdir -p "${QUICKSHELL_DIR}/components"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/shell.qml" -o "${QUICKSHELL_DIR}/shell.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/ClockWidget.qml" -o "${QUICKSHELL_DIR}/components/ClockWidget.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/TopBar.qml" -o "${QUICKSHELL_DIR}/components/TopBar.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/VolumeDropdown.qml" -o "${QUICKSHELL_DIR}/components/VolumeDropdown.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/WorkspacesStrip.qml" -o "${QUICKSHELL_DIR}/components/WorkspacesStrip.qml"
 fi
 
 echo "==> Configuration des variables NVIDIA dans ${HYPR_CONF}"

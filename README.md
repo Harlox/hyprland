@@ -43,15 +43,13 @@ nmtui
 
 ## Installation en une ligne
 
-L'installation complete a besoin du dossier `quickshell/`, donc la methode recommandee reste le clone du depot.
-
-Si tu veux seulement executer le script distant :
+Le script peut aussi etre lance directement depuis GitHub :
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Harlox/hyprland/main/install.sh | bash
 ```
 
-Dans ce mode, la configuration Quickshell locale ne sera pas copiee, car le script n'a pas le dossier du depot a cote de lui.
+Dans ce mode, si le dossier local `quickshell/` n'est pas present, le script telecharge automatiquement `shell.qml` et ses composants depuis GitHub.
 
 ## Ce que le script fait
 
@@ -102,6 +100,8 @@ Le dossier `quickshell/` est copie vers :
 ```text
 ~/.config/quickshell/
 ```
+
+Si le script est lance seul via l'URL raw GitHub, les memes fichiers sont telecharges directement depuis le depot.
 
 Puis Hyprland est configure pour lancer Quickshell automatiquement :
 
