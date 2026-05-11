@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v pacman >/dev/null 2>&1; then
+  echo "Erreur: ce script est prevu pour Arch/EndeavourOS avec pacman." >&2
+  exit 1
+fi
+
+if [[ "${EUID}" -eq 0 ]]; then
+  SUDO=""
+else
+  SUDO="sudo"
+fi
+
+echo "==> Mise a jour du systeme"
+$SUDO pacman -Syu --noconfirm
+
+echo "==> Installation du core Hyprland"
+$SUDO pacman -S --needed --noconfirm \
+  linux-zen linux-headers base base-devel \
+  mesa libdrm libglvnd \
+  nvidia-open-dkms nvidia-utils lib32-nvidia-utils egl-wayland libva-nvidia-driver \
+  wayland wayland-protocols qt6-wayland \
+  hyprland polkit \
+  xdg-desktop-portal xdg-desktop-portal-hyprland \
+  mako grim slurp \
+  quickshell \
+  pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber alsa-utils \
+  networkmanager upower brightnessctl \
+  kitty fuzzel nautilus \
+  noto-fonts noto-fonts-emoji ttf-nerd-fonts-symbols \
+  git cmake ninja python rustup nodejs npm go
+
+echo "==> Installation des extras"
+$SUDO pacman -S --needed --noconfirm \
+  matugen \
+  gamemode lib32-gamemode \
+  mangohud lib32-mangohud \
+  gamescope \
+  bluez bluez-utils
+
+echo "==> Activation des services systeme"
+$SUDO systemctl enable --now NetworkManager
+$SUDO systemctl enable --now bluetooth
+
+echo "==> Activation des services audio utilisateur"
+systemctl --user enable --now pipewire pipewire-pulse wireplumber || {
+  echo "Avertissement: impossible d'activer les services audio utilisateur maintenant."
+  echo "Relance la session puis execute: systemctl --user enable --now pipewire pipewire-pulse wireplumber"
+}
+
+HYPR_CONF="${HOME}/.config/hypr/hyprland.conf"
+QUICKSHELL_DIR="${HOME}/.config/quickshell"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+echo "==> Installation de la configuration Quickshell"
+mkdir -p "$QUICKSHELL_DIR"
+if [[ -f "${SCRIPT_DIR}/shell.qml" ]]; then
+  cp "${SCRIPT_DIR}/shell.qml" "${QUICKSHELL_DIR}/shell.qml"
+else
+  echo "Avertissement: shell.qml introuvable a cote de install.sh, copie Quickshell ignoree."
+fi
+
+echo "==> Configuration des variables NVIDIA dans ${HYPR_CONF}"
+mkdir -p "$(dirname "$HYPR_CONF")"
+touch "$HYPR_CONF"
+
+add_line_once() {
+  local line="$1"
+  if ! grep -Fxq "$line" "$HYPR_CONF"; then
+    printf '%s\n' "$line" >>"$HYPR_CONF"
+  fi
+}
+
+add_line_once "env = LIBVA_DRIVER_NAME,nvidia"
+add_line_once "env = GBM_BACKEND,nvidia-drm"
+add_line_once "env = __GLX_VENDOR_LIBRARY_NAME,nvidia"
+add_line_once "env = NVD_BACKEND,direct"
+add_line_once "exec-once = quickshell"
+
+echo "==> Installation terminee"
+echo "Si tu es en Wi-Fi, lance nmtui pour te connecter."
+echo "Redemarre ensuite pour charger le noyau, les modules NVIDIA et la session Hyprland."
