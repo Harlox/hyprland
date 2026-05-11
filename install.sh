@@ -55,10 +55,12 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 echo "==> Installation de la configuration Quickshell"
 mkdir -p "$QUICKSHELL_DIR"
-if [[ -f "${SCRIPT_DIR}/shell.qml" ]]; then
+if [[ -d "${SCRIPT_DIR}/quickshell" ]]; then
+  cp -R "${SCRIPT_DIR}/quickshell/." "$QUICKSHELL_DIR/"
+elif [[ -f "${SCRIPT_DIR}/shell.qml" ]]; then
   cp "${SCRIPT_DIR}/shell.qml" "${QUICKSHELL_DIR}/shell.qml"
 else
-  echo "Avertissement: shell.qml introuvable a cote de install.sh, copie Quickshell ignoree."
+  echo "Avertissement: configuration Quickshell introuvable a cote de install.sh, copie ignoree."
 fi
 
 echo "==> Configuration des variables NVIDIA dans ${HYPR_CONF}"

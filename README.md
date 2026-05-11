@@ -2,15 +2,17 @@
 
 Script d'installation pour preparer un environnement Hyprland sur Arch Linux ou EndeavourOS.
 
-Le projet installe les paquets essentiels, configure les services systeme, met en place PipeWire, ajoute les variables NVIDIA utiles pour Wayland, et installe une configuration Quickshell fournie avec le depot.
+Le projet installe les paquets essentiels, configure les services systeme, met en place PipeWire, ajoute les variables NVIDIA utiles pour Wayland, et installe la configuration Quickshell fournie avec le depot.
 
 ## Contenu
 
 ```text
 .
-├── install.sh   # Script d'installation
-├── shell.qml    # Configuration Quickshell
-└── README.md    # Documentation du projet
+- install.sh        # Script d'installation
+- quickshell/       # Configuration Quickshell
+  - shell.qml       # Point d'entree Quickshell
+  - components/     # Composants de la barre
+- README.md         # Documentation du projet
 ```
 
 ## Prerequis
@@ -27,6 +29,8 @@ Le script est pense pour une machine avec GPU NVIDIA et le pilote `nvidia-open-d
 Clone le depot, puis lance :
 
 ```bash
+git clone https://github.com/Harlox/hyprland.git
+cd hyprland
 chmod +x install.sh
 ./install.sh
 ```
@@ -36,6 +40,18 @@ Depuis un TTY, connecte-toi d'abord au reseau si necessaire :
 ```bash
 nmtui
 ```
+
+## Installation en une ligne
+
+L'installation complete a besoin du dossier `quickshell/`, donc la methode recommandee reste le clone du depot.
+
+Si tu veux seulement executer le script distant :
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Harlox/hyprland/main/install.sh | bash
+```
+
+Dans ce mode, la configuration Quickshell locale ne sera pas copiee, car le script n'a pas le dossier du depot a cote de lui.
 
 ## Ce que le script fait
 
@@ -81,10 +97,10 @@ env = NVD_BACKEND,direct
 
 ### Quickshell
 
-Le fichier `shell.qml` est copie vers :
+Le dossier `quickshell/` est copie vers :
 
 ```text
-~/.config/quickshell/shell.qml
+~/.config/quickshell/
 ```
 
 Puis Hyprland est configure pour lancer Quickshell automatiquement :
