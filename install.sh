@@ -66,7 +66,7 @@ else
   curl -fsSL "${QUICKSHELL_RAW_URL}/shell.qml" -o "${QUICKSHELL_DIR}/shell.qml"
   curl -fsSL "${QUICKSHELL_RAW_URL}/components/ClockWidget.qml" -o "${QUICKSHELL_DIR}/components/ClockWidget.qml"
   curl -fsSL "${QUICKSHELL_RAW_URL}/components/TopBar.qml" -o "${QUICKSHELL_DIR}/components/TopBar.qml"
-  curl -fsSL "${QUICKSHELL_RAW_URL}/components/VolumeDropdown.qml" -o "${QUICKSHELL_DIR}/components/VolumeDropdown.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/VolumeMenu.qml" -o "${QUICKSHELL_DIR}/components/VolumeMenu.qml"
   curl -fsSL "${QUICKSHELL_RAW_URL}/components/WorkspacesStrip.qml" -o "${QUICKSHELL_DIR}/components/WorkspacesStrip.qml"
 fi
 
