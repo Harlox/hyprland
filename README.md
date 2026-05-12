@@ -9,6 +9,7 @@ Le projet installe les paquets essentiels, configure les services systeme, met e
 ```text
 .
 - install.sh        # Script d'installation
+- hyprland.conf     # Configuration Hyprland installee
 - quickshell/       # Configuration Quickshell
   - shell.qml       # Point d'entree Quickshell
   - components/     # Composants de la barre
@@ -84,7 +85,7 @@ Les paquets NVIDIA installes sont :
 - `egl-wayland`
 - `libva-nvidia-driver`
 
-Le script ajoute ensuite ces variables dans `~/.config/hypr/hyprland.conf` :
+Le fichier `hyprland.conf` fourni contient ces variables NVIDIA :
 
 ```ini
 env = LIBVA_DRIVER_NAME,nvidia
@@ -110,6 +111,16 @@ exec-once = quickshell
 ```
 
 La configuration incluse fournit une barre simple avec workspaces Hyprland, horloge et controle du volume PipeWire.
+
+### Configuration Hyprland
+
+Le fichier local `hyprland.conf` est installe vers :
+
+```text
+~/.config/hypr/hyprland.conf
+```
+
+Le fichier existant sur la machine est remplace. Si le script est lance seul via l'URL raw GitHub, `hyprland.conf` est telecharge directement depuis le depot.
 
 ### Audio
 
@@ -137,7 +148,6 @@ Le script installe et active :
 Le script installe aussi quelques outils courants :
 
 - terminal : `kitty`
-- launcher : `fuzzel`
 - fichiers : `thunar`
 - luminosite et batterie : `brightnessctl`, `upower`
 - developpement : `git`, `cmake`, `ninja`, `python`, `rustup`, `nodejs`, `npm`, `go`
@@ -182,4 +192,4 @@ nvidia-dkms
 
 ## Idempotence
 
-Le script peut etre relance sans dupliquer les lignes ajoutees dans `hyprland.conf`. Les paquets sont installes avec `pacman --needed`, ce qui evite de reinstaller ce qui est deja present.
+Les paquets sont installes avec `pacman --needed`, ce qui evite de reinstaller ce qui est deja present. La configuration Hyprland est remplacee par celle du depot a chaque execution.

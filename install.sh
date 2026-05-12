@@ -44,48 +44,55 @@ $SUDO systemctl enable --now NetworkManager
 $SUDO systemctl enable --now bluetooth
 
 echo "==> Activation des services audio utilisateur"
-systemctl --user enable --now pipewire pipewire-pulse wireplumber || {
+if ! systemctl --user enable --now pipewire pipewire-pulse wireplumber; then
   echo "Avertissement: impossible d'activer les services audio utilisateur maintenant."
-  echo "Relance la session puis execute: systemctl --user enable --now pipewire pipewire-pulse wireplumber"
-}
+  echo "Relance la session puis execute :"
+  echo "  systemctl --user enable --now pipewire pipewire-pulse wireplumber"
+fi
 
 HYPR_CONF="${HOME}/.config/hypr/hyprland.conf"
 QUICKSHELL_DIR="${HOME}/.config/quickshell"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+HYPRLAND_CONF_RAW_URL="https://raw.githubusercontent.com/Harlox/hyprland/main/hyprland.conf"
 QUICKSHELL_RAW_URL="https://raw.githubusercontent.com/Harlox/hyprland/main/quickshell"
 
 echo "==> Installation de la configuration Quickshell"
-mkdir -p "$QUICKSHELL_DIR"
+mkdir -p "${QUICKSHELL_DIR}"
+
 if [[ -d "${SCRIPT_DIR}/quickshell" ]]; then
-  cp -R "${SCRIPT_DIR}/quickshell/." "$QUICKSHELL_DIR/"
+  cp -R "${SCRIPT_DIR}/quickshell/." "${QUICKSHELL_DIR}/"
 elif [[ -f "${SCRIPT_DIR}/shell.qml" ]]; then
   cp "${SCRIPT_DIR}/shell.qml" "${QUICKSHELL_DIR}/shell.qml"
 else
   echo "Configuration Quickshell locale introuvable, telechargement depuis GitHub."
+  if ! command -v curl >/dev/null 2>&1; then
+    echo "Erreur: curl est requis pour telecharger la configuration Quickshell." >&2
+    exit 1
+  fi
   mkdir -p "${QUICKSHELL_DIR}/components"
-  curl -fsSL "${QUICKSHELL_RAW_URL}/shell.qml" -o "${QUICKSHELL_DIR}/shell.qml"
-  curl -fsSL "${QUICKSHELL_RAW_URL}/components/ClockWidget.qml" -o "${QUICKSHELL_DIR}/components/ClockWidget.qml"
-  curl -fsSL "${QUICKSHELL_RAW_URL}/components/TopBar.qml" -o "${QUICKSHELL_DIR}/components/TopBar.qml"
-  curl -fsSL "${QUICKSHELL_RAW_URL}/components/VolumeMenu.qml" -o "${QUICKSHELL_DIR}/components/VolumeMenu.qml"
-  curl -fsSL "${QUICKSHELL_RAW_URL}/components/WorkspacesStrip.qml" -o "${QUICKSHELL_DIR}/components/WorkspacesStrip.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/shell.qml" \
+    -o "${QUICKSHELL_DIR}/shell.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/ClockWidget.qml" \
+    -o "${QUICKSHELL_DIR}/components/ClockWidget.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/TopBar.qml" \
+    -o "${QUICKSHELL_DIR}/components/TopBar.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/VolumeMenu.qml" \
+    -o "${QUICKSHELL_DIR}/components/VolumeMenu.qml"
+  curl -fsSL "${QUICKSHELL_RAW_URL}/components/WorkspacesStrip.qml" \
+    -o "${QUICKSHELL_DIR}/components/WorkspacesStrip.qml"
 fi
 
-echo "==> Configuration des variables NVIDIA dans ${HYPR_CONF}"
-mkdir -p "$(dirname "$HYPR_CONF")"
-touch "$HYPR_CONF"
-
-add_line_once() {
-  local line="$1"
-  if ! grep -Fxq "$line" "$HYPR_CONF"; then
-    printf '%s\n' "$line" >>"$HYPR_CONF"
+echo "==> Installation de la configuration Hyprland dans ${HYPR_CONF}"
+mkdir -p "$(dirname "${HYPR_CONF}")"
+if [[ -f "${SCRIPT_DIR}/hyprland.conf" ]]; then
+  cp "${SCRIPT_DIR}/hyprland.conf" "${HYPR_CONF}"
+else
+  if ! command -v curl >/dev/null 2>&1; then
+    echo "Erreur: curl est requis pour telecharger la configuration Hyprland." >&2
+    exit 1
   fi
-}
-
-add_line_once "env = LIBVA_DRIVER_NAME,nvidia"
-add_line_once "env = GBM_BACKEND,nvidia-drm"
-add_line_once "env = __GLX_VENDOR_LIBRARY_NAME,nvidia"
-add_line_once "env = NVD_BACKEND,direct"
-add_line_once "exec-once = quickshell"
+  curl -fsSL "${HYPRLAND_CONF_RAW_URL}" -o "${HYPR_CONF}"
+fi
 
 echo "==> Installation terminee"
 echo "Si tu es en Wi-Fi, lance nmtui pour te connecter."
