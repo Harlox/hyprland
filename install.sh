@@ -27,7 +27,7 @@ $SUDO pacman -S --needed --noconfirm \
   quickshell \
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber alsa-utils \
   networkmanager upower brightnessctl \
-  kitty fuzzel nautilus \
+  kitty fuzzel thunar \
   noto-fonts noto-fonts-emoji ttf-nerd-fonts-symbols \
   git curl cmake ninja python rustup nodejs npm go
 

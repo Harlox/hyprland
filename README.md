@@ -138,7 +138,7 @@ Le script installe aussi quelques outils courants :
 
 - terminal : `kitty`
 - launcher : `fuzzel`
-- fichiers : `nautilus`
+- fichiers : `thunar`
 - luminosite et batterie : `brightnessctl`, `upower`
 - developpement : `git`, `cmake`, `ninja`, `python`, `rustup`, `nodejs`, `npm`, `go`
 - gaming : `gamemode`, `mangohud`, `gamescope`
