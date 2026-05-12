@@ -15,6 +15,25 @@ fi
 echo "==> Mise a jour du systeme"
 $SUDO pacman -Syu --noconfirm
 
+echo "==> Verification des paquets conflictuels"
+CONFLICTING_PACKAGES=(
+  nvidia
+  nvidia-dkms
+  nvidia-open
+  pulseaudio
+  pulseaudio-bluetooth
+  jack2
+  pipewire-media-session
+)
+
+for pkg in "${CONFLICTING_PACKAGES[@]}"; do
+  if pacman -Qq "${pkg}" >/dev/null 2>&1; then
+    echo "${pkg} est installe et peut entrer en conflit avec les paquets requis."
+    echo "Suppression de ${pkg}."
+    $SUDO pacman -Rns --noconfirm "${pkg}"
+  fi
+done
+
 echo "==> Installation du core Hyprland"
 $SUDO pacman -S --needed --noconfirm \
   linux-zen linux-headers base base-devel \
