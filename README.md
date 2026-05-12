@@ -9,7 +9,7 @@ Le projet installe les paquets essentiels, configure les services systeme, met e
 ```text
 .
 - install.sh        # Script d'installation
-- hyprland.conf     # Configuration Hyprland installee
+- hyprland.lua      # Configuration Hyprland 0.55+ installee
 - quickshell/       # Configuration Quickshell
   - shell.qml       # Point d'entree Quickshell
   - components/     # Composants de la barre
@@ -85,13 +85,13 @@ Les paquets NVIDIA installes sont :
 - `egl-wayland`
 - `libva-nvidia-driver`
 
-Le fichier `hyprland.conf` fourni contient ces variables NVIDIA :
+Le fichier `hyprland.lua` fourni contient ces variables NVIDIA :
 
 ```ini
-env = LIBVA_DRIVER_NAME,nvidia
-env = GBM_BACKEND,nvidia-drm
-env = __GLX_VENDOR_LIBRARY_NAME,nvidia
-env = NVD_BACKEND,direct
+hl.env("LIBVA_DRIVER_NAME", "nvidia")
+hl.env("GBM_BACKEND", "nvidia-drm")
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+hl.env("NVD_BACKEND", "direct")
 ```
 
 ### Quickshell
@@ -104,23 +104,25 @@ Le dossier `quickshell/` est copie vers :
 
 Si le script est lance seul via l'URL raw GitHub, les memes fichiers sont telecharges directement depuis le depot.
 
-Puis Hyprland est configure pour lancer Quickshell automatiquement :
+Puis Hyprland est configure pour lancer Quickshell automatiquement depuis `hyprland.lua` :
 
-```ini
-exec-once = quickshell
+```lua
+hl.on("hyprland.start", function()
+  hl.exec_cmd("quickshell")
+end)
 ```
 
 La configuration incluse fournit une barre simple avec workspaces Hyprland, horloge et controle du volume PipeWire.
 
 ### Configuration Hyprland
 
-Le fichier local `hyprland.conf` est installe vers :
+Le fichier local `hyprland.lua` est installe vers :
 
 ```text
-~/.config/hypr/hyprland.conf
+~/.config/hypr/hyprland.lua
 ```
 
-Le fichier existant sur la machine est remplace. Si le script est lance seul via l'URL raw GitHub, `hyprland.conf` est telecharge directement depuis le depot.
+Le script supprime aussi l'ancien `~/.config/hypr/hyprland.conf` pour eviter que l'ancienne configuration Hyprlang reste en place. Si le script est lance seul via l'URL raw GitHub, `hyprland.lua` est telecharge directement depuis le depot.
 
 ### Audio
 
@@ -169,13 +171,13 @@ Puis lance Hyprland depuis ton display manager ou depuis un TTY.
 Pour utiliser le noyau standard au lieu de `linux-zen`, remplace dans `install.sh` :
 
 ```text
-linux-zen
+linux-zen linux-zen-headers
 ```
 
 par :
 
 ```text
-linux
+linux linux-headers
 ```
 
 Pour utiliser le pilote NVIDIA DKMS classique, remplace :
@@ -192,4 +194,4 @@ nvidia-dkms
 
 ## Idempotence
 
-Les paquets sont installes avec `pacman --needed`, ce qui evite de reinstaller ce qui est deja present. La configuration Hyprland est remplacee par celle du depot a chaque execution.
+Les paquets sont installes avec `pacman --needed`, ce qui evite de reinstaller ce qui est deja present. La configuration Hyprland Lua est remplacee par celle du depot a chaque execution.
