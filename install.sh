@@ -16,13 +16,18 @@ HYPR_DIR="${HOME}/.config/hypr"
 HYPR_CONF="${HYPR_DIR}/hyprland.conf"
 HYPR_LUA="${HYPR_DIR}/hyprland.lua"
 QUICKSHELL_DIR="${HOME}/.config/quickshell"
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+SCRIPT_SOURCE="${BASH_SOURCE[0]:-}"
+if [[ -n "${SCRIPT_SOURCE}" && -f "${SCRIPT_SOURCE}" ]]; then
+  SCRIPT_DIR="$(cd -- "$(dirname -- "${SCRIPT_SOURCE}")" >/dev/null 2>&1 && pwd)"
+else
+  SCRIPT_DIR=""
+fi
 HYPRLAND_LUA_RAW_URL="https://raw.githubusercontent.com/Harlox/hyprland/main/hyprland.lua"
 QUICKSHELL_RAW_URL="https://raw.githubusercontent.com/Harlox/hyprland/main/quickshell"
 
 echo "==> Installation de la configuration Hyprland Lua dans ${HYPR_LUA}"
 mkdir -p "${HYPR_DIR}"
-if [[ -f "${SCRIPT_DIR}/hyprland.lua" ]]; then
+if [[ -n "${SCRIPT_DIR}" && -f "${SCRIPT_DIR}/hyprland.lua" ]]; then
   cp "${SCRIPT_DIR}/hyprland.lua" "${HYPR_LUA}"
 else
   if ! command -v curl >/dev/null 2>&1; then
@@ -36,9 +41,9 @@ rm -f "${HYPR_CONF}"
 echo "==> Installation de la configuration Quickshell"
 mkdir -p "${QUICKSHELL_DIR}"
 
-if [[ -d "${SCRIPT_DIR}/quickshell" ]]; then
+if [[ -n "${SCRIPT_DIR}" && -d "${SCRIPT_DIR}/quickshell" ]]; then
   cp -R "${SCRIPT_DIR}/quickshell/." "${QUICKSHELL_DIR}/"
-elif [[ -f "${SCRIPT_DIR}/shell.qml" ]]; then
+elif [[ -n "${SCRIPT_DIR}" && -f "${SCRIPT_DIR}/shell.qml" ]]; then
   cp "${SCRIPT_DIR}/shell.qml" "${QUICKSHELL_DIR}/shell.qml"
 else
   echo "Configuration Quickshell locale introuvable, telechargement depuis GitHub."
